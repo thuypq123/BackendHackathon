@@ -4,6 +4,8 @@ const user = require('../models/user');
 const dotenv = require('dotenv');
 const OTP = require('../models/OTP');
 const jwt = require('jsonwebtoken');
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(process.env.SECRET_OTP);
 var newOTP = require('otp-generators')
 
 exports.postRegister = async (req, res) => {
@@ -63,8 +65,9 @@ exports.postRegister = async (req, res) => {
                     verify: false,
                 });
                 await newUser.save();
+                const encryptOTP = cryptr.encrypt(newOTP.generate(6, { alphabets: false, upperCase: false, specialChar: false }));
                 const createOTP = new OTP({
-                    otp:newOTP.generate(6, { alphabets: false, upperCase: false, specialChar: false }),
+                    otp:encryptOTP,
                     status: false,
                     date: Date.now(),
                     user: newUser._id,

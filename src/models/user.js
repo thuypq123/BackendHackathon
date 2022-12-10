@@ -7,6 +7,8 @@ const userSchema = new Schema({
     email: String,
     phone: String,
     verify: Boolean,
+    isBlock: Boolean,
+    faildLogin: Number,
     passWord: String,
     oldPass1: String,
     oldPass2: String,

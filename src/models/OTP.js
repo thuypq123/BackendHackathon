@@ -8,7 +8,7 @@ const OTPSchema = new Schema({
     date: Date,
     expireAt: {
         type: Date,
-        default: Date.now() + 0.5 * 60 * 1000,
+        default: Date.now() + 5 * 60 * 1000,
         index: { expires: '300s' },
     },
     user: {type: Schema.Types.ObjectId, ref: 'User'},
