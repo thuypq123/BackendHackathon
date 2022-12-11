@@ -1,29 +1,41 @@
 const axios = require('axios');
 const {get_access_token} = require('../lib/getAccessToken');
 const user = require('../models/user');
+const mailer = require('../lib/sendMail');
 const dotenv = require('dotenv');
-const OTP = require('../models/OTP');
 const jwt = require('jsonwebtoken');
+const OTP = require('../models/OTP');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(process.env.SECRET_OTP);
 var newOTP = require('otp-generators')
 
 exports.postRegister = async (req, res) => {
     const accessToken = await get_access_token();
+    console.log(req.body);
     try{
         const existUserEmail = await user.findOne({email: req.body.data.email});
         const existUserPhone = await user.findOne({phone: req.body.data.phone});
+        const existUserUsername = await user.findOne({ username: req.body.data.username});
+        console.log(existUserUsername);
+        if(existUserUsername){
+            res.json({
+                'response': {
+                    'responseCode': '11',
+                    'responseMessage': 'Username already exists',
+                }
+            });
+        }else{
         if(existUserEmail){
             res.json({
                 'response': {
-                    'responseCode': '122',
+                    'responseCode': '12',
                     'responseMessage': 'Email already exists',
                 }
             });
         }else if(existUserPhone){
             res.json({
                 'response': {
-                    'responseCode': '123',
+                    'responseCode': '13',
                     'responseMessage': 'Phone already exists',
                 }
             });
@@ -33,6 +45,7 @@ exports.postRegister = async (req, res) => {
                 {
                     'data': {
                         'credential': req.body.data.credential,
+                        'username': req.body.data.username,
                         'email': req.body.data.email,
                         'fullName': req.body.data.fullName,
                         'identityNumber': req.body.data.identityNumber,
@@ -57,7 +70,8 @@ exports.postRegister = async (req, res) => {
             if(data.response.responseCode === '00'){
                 const newUser = new user({
                     email: req.body.data.email,
-                    password: req.body.data.credential,
+                    password: req.body.data.password,
+                    username: req.body.data.username,
                     fullName: req.body.data.fullName,
                     identityNumber: req.body.data.identityNumber,
                     phone: req.body.data.phone,
@@ -65,22 +79,27 @@ exports.postRegister = async (req, res) => {
                     verify: false,
                 });
                 await newUser.save();
-                const encryptOTP = cryptr.encrypt(newOTP.generate(6, { alphabets: false, upperCase: false, specialChar: false }));
+                const createNewOTP = newOTP.generate(6, { alphabets: false, upperCase: false, specialChar: false }).toString();
+                console.log(createNewOTP);
+                const encryptOTP = cryptr.encrypt(createNewOTP);
                 const createOTP = new OTP({
                     otp:encryptOTP,
                     status: false,
                     date: Date.now(),
+                    type: 'register',
+                    email: newUser.email,
                     user: newUser._id,
                 });
                 await createOTP.save();
-                console.log("Register successfully")
-                const token = jwt.sign({email: req.body.data.email}, process.env.SECRET_JWT);
+                mailer(createNewOTP, req.body.data.email);
+                console.log("Register successfully");
+                const token = jwt.sign({email:newUser.email}, process.env.SECRET_JWT);
                 res.json({...response.data, token});
             }else{
                 console.log("Register failed")
                 res.json(data);
             }
-        }
+        }}
     }catch(e){
         console.log("Error in register: ", e);
         res.json({error: "error when register"});
