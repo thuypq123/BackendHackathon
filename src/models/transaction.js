@@ -4,12 +4,14 @@ const Schema = mongoose.Schema;
 const id = mongoose.Types.ObjectId;
 
 const transactionSchema = new Schema({
-    accNo: String,
+    accountNo: String,
     amount: Number,
     toAccNo: String,
     status: Boolean,
     description: String,
     date: Date,
+    email: String,
+    reason: String,
     user: {type: Schema.Types.ObjectId, ref: 'User'},
 });
 

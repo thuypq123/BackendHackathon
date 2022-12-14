@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const id = mongoose.Types.ObjectId;
 const userSchema = new Schema({
-    accNo: String,
+    accountNo: String,
     fullName: String,
     username: String,
     email: String,
@@ -10,6 +10,7 @@ const userSchema = new Schema({
     verify: Boolean,
     isBlock: Boolean,
     faildLogin: Number,
+    amount: String,
     password: String,
     oldPass1: String,
     oldPass2: String,

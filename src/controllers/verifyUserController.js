@@ -7,9 +7,11 @@ const OTP = require('../models/OTP');
 exports.postVerifyUser = async (req, res) => {
     const {email} = req.body;
     const getOTP = req.body.OTP;
+    console.log(getOTP);
     const existUser = await user.findOne({email: email});
     if(existUser){
         const existOTP = await OTP.findOne({email:req.body.email, status:false, type:'register'});
+        console.log(existOTP);
         if(existOTP){
             const decryptedString = cryptr.decrypt(existOTP.otp);
             if(decryptedString === getOTP){

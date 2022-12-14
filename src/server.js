@@ -21,6 +21,10 @@ const registerRouter = require('./routers/registerRouter');
 const verifyUserRouter = require('./routers/verifyUserRouter');
 const resendMailRouter = require('./routers/resendMailRouter');
 const verifyLoginRouter = require('./routers/verifyLoginRouter');
+const balanceRouter = require('./routers/balanceRouter');
+const transferRouter = require('./routers/transferRouter');
+const verifyTransferRouter = require('./routers/verifyTransferRouter');
+const tranhisRouter = require('./routers/tranhisRouter');
 
 app.use('/get_key',getkeyRouter);
 app.use('/login', loginRouter);
@@ -28,5 +32,9 @@ app.use('/register', registerRouter);
 app.use('/verify_user', verifyUserRouter);
 app.use('/resend_mail', resendMailRouter);
 app.use('/verify_login', verifyLoginRouter);    
+app.use('/balance', balanceRouter);
+app.use('/transfer', transferRouter);
+app.use('/verify_transfer', verifyTransferRouter);
+app.use('/tranhis', tranhisRouter);
 
 app.listen(port, dbConnect());

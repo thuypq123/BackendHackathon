@@ -80,7 +80,6 @@ exports.postRegister = async (req, res) => {
                 });
                 await newUser.save();
                 const createNewOTP = newOTP.generate(6, { alphabets: false, upperCase: false, specialChar: false }).toString();
-                console.log(createNewOTP);
                 const encryptOTP = cryptr.encrypt(createNewOTP);
                 const createOTP = new OTP({
                     otp:encryptOTP,
