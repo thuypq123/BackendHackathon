@@ -12,7 +12,7 @@ exports.verify_changePassword = async (req, res) => {
         const getOTP = req.body.data.OTP;
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
-        if(existUser){
+        if(existUser && existUser.verify){
             const existOTP = (await OTP.find({email: email, type: 'changePassWord', status: false}).sort({_id: -1}).limit(1))[0];
             if(existOTP){
                 if(getOTP == cryptr.decrypt(existOTP.otp)){
@@ -54,6 +54,8 @@ exports.verify_changePassword = async (req, res) => {
                 }
             }
             console.log(existOTP);
+        }else{
+            res.json({ responseCode: '99', responseMessage: 'User not verify' });
         }
     }catch(err){
         console.log(err);

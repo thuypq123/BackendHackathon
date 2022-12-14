@@ -12,7 +12,7 @@ exports.payment = async (req, res) => {
     try{
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
-        if(existUser){
+        if(existUser && existUser.verify){
             const newPayment = new payment({
                 sdId: sdId,
                 accNo: accountNo,
@@ -43,7 +43,7 @@ exports.payment = async (req, res) => {
             res.json({
                 'response': {
                     'responseCode': '14',
-                    'responseMessage': 'User not found',
+                    'responseMessage': 'User not verify',
                 }
             });
         }

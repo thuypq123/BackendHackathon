@@ -8,7 +8,7 @@ const axios = require('axios');
 exports.verifyLogin = async (req, res) => {
     try{
         const existUser = await user.findOne({email: req.body.email});
-        if(existUser){
+        if(existUser && existUser.verify){
             const existOTP = (await OTP.find({email: req.body.email, type: 'login', status: false}).sort({_id: -1}).limit(1))[0];
             console.log(existOTP);
             if(existOTP){
@@ -45,7 +45,7 @@ exports.verifyLogin = async (req, res) => {
             res.json({
                 'response': {
                     'responseCode': '14',
-                    'responseMessage': 'User not found',
+                    'responseMessage': 'User not verify',
                 }
             });
         }

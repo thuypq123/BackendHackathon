@@ -13,7 +13,7 @@ exports.transfer = async (req, res) => {
         const {token, amount, description, toAcct} = req.body;
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
-        if(existUser){
+        if(existUser && existUser.verify){
             if(existUser.verify){
                 const createNewOTP = newOTP.generate(6, { alphabets: false, upperCase: false, specialChar: false }).toString();
                 const encryptOTP = cryptr.encrypt(createNewOTP);
@@ -44,7 +44,7 @@ exports.transfer = async (req, res) => {
                 res.json({responseCode:"18" ,message: 'Please verify your email'});
             }
         }else{
-            res.json({responseCode:"19" ,message: 'Please register'});
+            res.json({responseCode:"19" ,message: 'account not verify'});
         }
         console.log(email, accountNo);
     }catch(err){

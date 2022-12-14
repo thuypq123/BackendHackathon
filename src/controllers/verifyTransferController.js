@@ -17,7 +17,7 @@ exports.verifyTransfer = async (req, res) => {
         replace(/\..+/, '') 
         console.log(d);    
         const existUser = await user.findOne({email});
-        if(existUser){
+        if(existUser && existUser.verify){
             const getTransaction = (await transaction.find({email: email, status: false}).sort({_id: -1}).limit(1))[0];
             if(getTransaction){
                 const existOTP = (await OTP.find({email: email, type: 'transfer', status: false}).sort({_id: -1}).limit(1))[0];
@@ -92,7 +92,7 @@ exports.verifyTransfer = async (req, res) => {
             res.json({
                 'response': {
                     'responseCode': '14',
-                    'responseMessage': 'User not found',
+                    'responseMessage': 'User not verify',
                 }
             });
         }

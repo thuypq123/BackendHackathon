@@ -10,7 +10,7 @@ exports.tranhis = async (req, res) => {
         console.log(new Date().toLocaleDateString());
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
-        if(existUser){
+        if(existUser && existUser.verify){
             if(inSystem=='true' || inSystem==true){
                 // convert date from DD-MM-YYY to YYYY-MM-DD
                 const newToDate = toDate.split("-").reverse().join("-");
@@ -63,6 +63,8 @@ exports.tranhis = async (req, res) => {
                     res.json({responseCode:"21" ,message: response.data.response.responseMessage});
                 }
             }
+        }else{
+            res.json({responseCode:"99" ,message: 'User not verify'});
         }
     }catch(err){
         console.log(err);

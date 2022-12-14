@@ -12,7 +12,7 @@ exports.getPayment = async (req, res) => {
         if(inSystem || inSystem == 'true'){
             const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
             const existUser = await user.findOne({ email: email });
-            if(existUser){
+            if(existUser && existUser.verify){
                 const listPayment = await payment.find({email: email});
                 res.json({
                     'response': {
@@ -24,7 +24,7 @@ exports.getPayment = async (req, res) => {
                     }
                 });
             }else{
-                res.json({ responseCode: '99', responseMessage: 'User not found' });
+                res.json({ responseCode: '99', responseMessage: 'User not verify' });
             }
         }else{
             const response = await axios.post(

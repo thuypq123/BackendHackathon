@@ -15,7 +15,7 @@ exports.verifyPayment = async (req, res) => {
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
         console.log(existUser);
-        if(existUser){
+        if(existUser && existUser.verify){
             const paymentOTP = await (await OTP.find({email: email, type: 'payment', status: false}).sort({_id: -1}).limit(1))[0];
             if(paymentOTP){
                 const decryptedString = cryptr.decrypt(paymentOTP.otp);
@@ -93,6 +93,13 @@ exports.verifyPayment = async (req, res) => {
                     }
                 })
             }
+        }else{
+            res.json({
+                'response': {
+                    'responseCode': '14',
+                    'responseMessage': 'User not verify',
+                }
+            });
         }
         
     }catch(err){
