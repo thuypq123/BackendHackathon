@@ -9,6 +9,7 @@ const OTPSchema = new Schema({
     date: Date,
     type: String,
     email: String,
+    newPass: String,
     expireAt: {
         type: Date,
         default: Date.now() + 50 * 60 * 1000,

@@ -9,6 +9,7 @@ const transactionSchema = new Schema({
     toAccNo: String,
     status: Boolean,
     description: String,
+    type: String,
     date: Date,
     email: String,
     reason: String,

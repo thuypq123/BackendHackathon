@@ -11,12 +11,20 @@ exports.tranhis = async (req, res) => {
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
         if(existUser){
-            if(inSystem=='true'){
+            if(inSystem=='true' || inSystem==true){
                 // convert date from DD-MM-YYY to YYYY-MM-DD
                 const newToDate = toDate.split("-").reverse().join("-");
                 const newFromDate = fromDate.split("-").reverse().join("-");
                 console.log(newToDate, newFromDate);
-                const existTransaction = await transaction.find({accountNo: accountNo, date: { $gte: newFromDate, $lte: newToDate }});
+                const existTransaction = await transaction.find({ $or:[{accountNo: accountNo}, {toAccNo:accountNo}], date: { $gte: newFromDate, $lte: newToDate }}).lean();
+                existTransaction.map((item) => {
+                    if(item.accountNo == accountNo){
+                        item.type = 'OUT';
+                    }else{
+                        item.type = 'IN';
+                    }
+                    return item;
+                });
                 if(existTransaction){
                     res.json({responseCode:"00" ,message: 'Success', data:{ transHis: existTransaction}});
                 }else{
@@ -30,7 +38,7 @@ exports.tranhis = async (req, res) => {
                     'https://7ucpp7lkyl.execute-api.ap-southeast-1.amazonaws.com/dev/tranhis',
                     {
                         'data': {
-                            'acctNo': '068704070000489',
+                            'acctNo': accountNo,
                             'fromDate': newFromDate,
                             'toDate': newToDate
                         },

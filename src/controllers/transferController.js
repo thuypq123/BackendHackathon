@@ -9,7 +9,7 @@ const mailer = require('../lib/sendMail');
 const transaction = require('../models/transaction');
 exports.transfer = async (req, res) => {
     const accessToken = await get_access_token();
-    // try{
+    try{
         const {token, amount, description, toAcct} = req.body;
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
@@ -47,8 +47,8 @@ exports.transfer = async (req, res) => {
             res.json({responseCode:"19" ,message: 'Please register'});
         }
         console.log(email, accountNo);
-    // }catch(err){
-    //     console.log("in getkeyController");
-    //     res.json({responseCode:"20" ,message: 'Error when transfer'});
-    // }
+    }catch(err){
+        console.log("in getkeyController");
+        res.json({responseCode:"20" ,message: 'Error when transfer'});
+    }
 };
