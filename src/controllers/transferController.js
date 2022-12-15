@@ -10,7 +10,8 @@ const transaction = require('../models/transaction');
 exports.transfer = async (req, res) => {
     const accessToken = await get_access_token();
     try{
-        const {token, amount, description, toAcct} = req.body;
+        const {token, amount, description, toAcc} = req.body.data;
+        console.log(req.body.data);
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
         if(existUser && existUser.verify){
@@ -29,7 +30,7 @@ exports.transfer = async (req, res) => {
                 const createNewTransaction = new transaction({
                     accountNo: accountNo,
                     amount: amount,
-                    toAccNo: toAcct,
+                    toAccNo: toAcc,
                     status: false,
                     description: description,
                     date: Date.now(),

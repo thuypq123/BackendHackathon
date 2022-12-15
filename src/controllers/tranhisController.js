@@ -6,17 +6,19 @@ const axios = require('axios');
 const _ = require('lodash');
 exports.tranhis = async (req, res) => {
     try{
-        const {token, fromDate, toDate, inSystem} = req.body;
-        console.log(new Date().toLocaleDateString());
+        const {token, fromDate, toDate, inSystem} = req.body.data;
+        console.log(token, fromDate, toDate, inSystem);
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});
         if(existUser && existUser.verify){
             if(inSystem=='true' || inSystem==true){
-                // convert date from DD-MM-YYY to YYYY-MM-DD
-                const newToDate = toDate.split("-").reverse().join("-");
-                const newFromDate = fromDate.split("-").reverse().join("-");
-                console.log(newToDate, newFromDate);
-                const existTransaction = await transaction.find({ $or:[{accountNo: accountNo}, {toAccNo:accountNo}], date: { $gte: newFromDate, $lte: newToDate }}).lean();
+                if(fromDate.length && toDate.length){
+                    const newToDate = toDate.split("-").reverse().join("-");
+                    const newFromDate = fromDate.split("-").reverse().join("-");
+                    var existTransaction = await transaction.find({ $or:[{accountNo: accountNo}, {toAccNo:accountNo}], date: { $gte: newFromDate, $lte: newToDate }}).lean();
+                }else{
+                    var existTransaction = await transaction.find({ $or:[{accountNo: accountNo}, {toAccNo:accountNo}]}).lean().limit(3);
+                }
                 existTransaction.map((item) => {
                     if(item.accountNo == accountNo){
                         item.type = 'OUT';

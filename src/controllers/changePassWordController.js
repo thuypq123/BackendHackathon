@@ -15,7 +15,6 @@ exports.changePassWord = async (req, res) => {
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         console.log(email, accountNo);
         const existUser = await user.findOne({email:email, username: username, password: oldPass});
-        console.log(existUser);
         if(existUser && existUser.verify){
             // const response = await axios.post(
             //     'https://7ucpp7lkyl.execute-api.ap-southeast-1.amazonaws.com/dev/change_password',
@@ -53,7 +52,7 @@ exports.changePassWord = async (req, res) => {
                 sendMail(createNewOTP, existUser.email);
                 res.json({responseCode:"00" ,message: 'Please check your email to verify'});
         }else{
-            res.json({responseCode:"99" ,message: 'User not verify'});
+            res.json({responseCode:"99" ,message: 'pass word is not correct'});
         }
     }catch(err){
         console.log(err);

@@ -9,6 +9,7 @@ exports.verify_changePassword = async (req, res) => {
     const accessToken = await get_access_token();
     try{
         const {token, credential, key} = req.body.data;
+        console.log(req.body);
         const getOTP = req.body.data.OTP;
         const {email, accountNo} = jwt.verify(token, process.env.SECRET_JWT);
         const existUser = await user.findOne({email: email});

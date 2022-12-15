@@ -19,6 +19,7 @@ exports.verifyTransfer = async (req, res) => {
         const existUser = await user.findOne({email});
         if(existUser && existUser.verify){
             const getTransaction = (await transaction.find({email: email, status: false}).sort({_id: -1}).limit(1))[0];
+            console.log(getTransaction);
             if(getTransaction){
                 const existOTP = (await OTP.find({email: email, type: 'transfer', status: false}).sort({_id: -1}).limit(1))[0];
                 console.log(existOTP);
